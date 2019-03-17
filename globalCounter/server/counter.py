@@ -1,7 +1,6 @@
 import socket
 import struct
 
-
 UDP_MAX_MSG = 65_536
 
 
