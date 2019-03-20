@@ -19,6 +19,6 @@ def test_client_count_decorator():
         return 0
 
     with global_counter(TEST_IP, TEST_PORT):
-        count_number, result = get_zero()
-        assert count_number == 1
+        sum, result = get_zero()
+        assert sum == 1
         assert result == 0

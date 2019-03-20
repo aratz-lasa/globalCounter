@@ -16,4 +16,4 @@ def test_server_count():
         sock.sendto(TEST_MSG, (TEST_IP, TEST_PORT))
         msg, addr = sock.recvfrom(MSG_MAXIMUM_LENGTH)
 
-        assert struct.unpack(COUNT_NUMBER_FORMAT, msg)[0] == 1
+        assert struct.unpack(SUM_NUMBER_FORMAT, msg)[0] == 1
