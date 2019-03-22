@@ -1,22 +1,37 @@
 from globalCounter.protocol.methods import *
-from globalCounter.protocol.syntax import *
 
-
-TEST_OP_CODE = 1
-TEST_PAYLOAD = "topic"
 
 def test_build_message():
-
-    message = build_message(TEST_OP_CODE, TEST_PAYLOAD)
+    op_code = COUNT
+    data = "topic"
+    message = build_message(op_code, data)
     assert type(message) is bytes
-    assert message[0] == TEST_OP_CODE
-    assert message[1:].decode() == TEST_PAYLOAD
+    assert message[0] == op_code
+    assert message[1:].decode(DATA_ENCODING) == data
+
+    op_code = RE_COUNT
+    data = 1
+    message = build_message(op_code, data)
+    assert type(message) is bytes
+    assert message[0] == op_code
+    assert message[1] == data
 
 
 def test_parse_message():
-    TEST_MESSAGE = bytes([TEST_OP_CODE]) + TEST_PAYLOAD.encode(PAYLOAD_ENCODING)
-    op_code, payload = parse_message(TEST_MESSAGE)
-    assert type(op_code) is int
-    assert type(payload) is str
-    assert op_code == TEST_OP_CODE
-    assert payload == TEST_PAYLOAD
+    op_code = COUNT
+    data = "topic"
+    test_message = bytes([op_code]) + data.encode(DATA_ENCODING)
+    re_op_code, re_data = parse_message(test_message)
+    assert type(re_op_code) is int
+    assert type(re_data) is str
+    assert re_op_code == op_code
+    assert re_data == data
+
+    op_code = RE_COUNT
+    data = 1
+    test_message = bytes([op_code, data])
+    re_op_code, re_data = parse_message(test_message)
+    assert type(re_op_code) is int
+    assert type(re_data) is int
+    assert re_op_code == op_code
+    assert re_data == data
