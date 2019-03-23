@@ -18,3 +18,4 @@ def global_counter(ip="127.0.0.1", port=5555, tcp=False):
         yield
     finally:
         server_proc.terminate()
+        server_proc.join()

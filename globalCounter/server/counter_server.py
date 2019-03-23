@@ -1,6 +1,6 @@
 import socket
 
-from ..protocol.methods import build_message, parse_message
+from ..protocol.methods import *
 from ..protocol.models import *
 from ..various.abc import CounterServer
 
@@ -17,30 +17,18 @@ class UDPCounterServer(CounterServer):
     def run(self):
         self.is_running = True
 
-        while self.is_running:
-            addr, msg = self.receive_msg()
-            op_code, payload = msg
-
-            sum = self.count_and_get_sum(payload)
-            re_op_code = request_response_opcodes[op_code]
-            message = build_message(re_op_code, sum)
-
-            self.send_response(addr, message)
+        try:
+            while self.is_running:
+                msg, addr = self.sock.recvfrom(MSG_MAXIMUM_LENGTH)
+                re_msg = get_response(msg, self.topic_sum_map)
+                self.send_response(addr, re_msg)
+        except Exception as err:
+            if self.is_running:
+                raise err
 
     def send_response(self, addr, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(message, addr)
-
-    def receive_msg(self):
-        data, addr = self.sock.recvfrom(MSG_MAXIMUM_LENGTH)
-        op_code, payload = parse_message(data)
-        return addr, (op_code, payload)
-
-    def count_and_get_sum(self, topic):
-        sum = self.topic_sum_map.get(topic, 0)
-        sum += 1
-        self.topic_sum_map[topic] = sum
-        return sum
 
     def bind_socket(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -48,8 +36,8 @@ class UDPCounterServer(CounterServer):
         self.sock.bind((self.ip, self.port))
 
     def stop(self):
-        self.sock.close()
         self.is_running = False
+        self.sock.close()
 
 
 class TCPCounterServer(CounterServer):
@@ -64,31 +52,19 @@ class TCPCounterServer(CounterServer):
     def run(self):
         self.is_running = True
 
-        while self.is_running:
-            conn, msg = self.receive_msg()
-            op_code, payload = msg
-
-            sum = self.count_and_get_sum(payload)
-            re_op_code = request_response_opcodes[op_code]
-            message = build_message(re_op_code, sum)
-
-            self.send_response(conn, message)
+        try:
+            while self.is_running:
+                conn, addr = self.sock.accept()
+                msg = conn.recv(MSG_MAXIMUM_LENGTH)
+                re_msg = get_response(msg, self.topic_sum_map)
+                self.send_response(conn, re_msg)
+        except Exception as err:
+            if self.is_running:
+                raise err
 
     def send_response(self, conn, message):
         conn.send(message)
         conn.close()
-
-    def receive_msg(self):
-        conn, addr = self.sock.accept()
-        data = conn.recv(MSG_MAXIMUM_LENGTH)
-        op_code, payload = parse_message(data)
-        return conn, (op_code, payload)
-
-    def count_and_get_sum(self, topic):
-        sum = self.topic_sum_map.get(topic, 0)
-        sum += 1
-        self.topic_sum_map[topic] = sum
-        return sum
 
     def bind_socket(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -97,5 +73,5 @@ class TCPCounterServer(CounterServer):
         self.sock.listen(1)
 
     def stop(self):
-        self.sock.close()
         self.is_running = False
+        self.sock.close()

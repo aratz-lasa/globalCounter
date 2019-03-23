@@ -4,3 +4,11 @@ class MessageOpCode(Exception):
 
 class MessageDataType(Exception):
     pass
+
+
+class CounterUDPConnection(Exception):
+    pass
+
+
+class CounterTCPConnection(Exception):
+    pass
