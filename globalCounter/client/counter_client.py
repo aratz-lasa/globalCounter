@@ -18,9 +18,9 @@ def count(topic: str = "default",
 
     msg = build_message(COUNT, topic)
     if tcp:
-        return send_recv_tcp_msg(msg, ip, port)
+        return _send_recv_tcp_msg(msg, ip, port)
     else:
-        return send_recv_udp_msg(msg, ip, port)
+        return _send_recv_udp_msg(msg, ip, port)
 
 
 def count_deco(*deco_args, **deco_kwargs):
@@ -47,12 +47,12 @@ def reset(topic: str = "default",
 
     msg = build_message(RESET_SUM, topic)
     if tcp:
-        return send_recv_tcp_msg(msg, ip, port)
+        return _send_recv_tcp_msg(msg, ip, port)
     else:
-        return send_recv_udp_msg(msg, ip, port)
+        return _send_recv_udp_msg(msg, ip, port)
 
 
-def send_recv_udp_msg(msg: bytes, ip: str, port: int) -> Any:
+def _send_recv_udp_msg(msg: bytes, ip: str, port: int) -> Any:
     attempts = 0
     max_attempts = 5
     timeout = 0.1
@@ -70,7 +70,7 @@ def send_recv_udp_msg(msg: bytes, ip: str, port: int) -> Any:
     raise CounterUDPConnection("Exceeded connection maximum attempts")
 
 
-def send_recv_tcp_msg(msg: bytes, ip: str, port: int) -> Any:
+def _send_recv_tcp_msg(msg: bytes, ip: str, port: int) -> Any:
     timeout = 0.1
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP
