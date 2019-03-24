@@ -10,7 +10,7 @@ Have you ever wanted to achieve **complete order** in a distributed system? **Gl
 ## Asynchronous vs Multiprocess
 GlobalCounter supports **asynchronous** and **multiprocessing** Client and Server. 
 
-For asynchronous it uses [Trio](https://github.com/python-trio/trio) for asynchronous programming. The server spawns one coroutine for every request.
+It uses [Trio](https://github.com/python-trio/trio) for asynchronous programming. The server spawns one coroutine for every request.
 
 For multiprocessing, the Server contains a Pool of processes. The maximum amount of Processes in the Pool, it is specified when initializing the Server Class. By default it is equal to system's cpu amount.
 
