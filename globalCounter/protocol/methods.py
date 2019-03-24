@@ -27,9 +27,9 @@ def build_message(op_code: int, data: Any) -> bytes:
         return bytes([op_code])
 
 
-def parse_msg(message: bytes) -> (int, str):
-    op_code = message[0]
-    raw_data = message[1:]
+def parse_msg(msg: bytes) -> (int, str):
+    op_code = msg[0]
+    raw_data = msg[1:]
     try:
         data_type = op_code_data_type[op_code]
         if data_type is str:
