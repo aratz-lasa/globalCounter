@@ -3,7 +3,7 @@ Have you ever wanted to achieve **complete order** in a distributed system? **Gl
 
 # Description
 ## Basic Concepts
-- **Counter**: It is a program that contains a *dict* of *Topic*->*Sum*. *To count* means adding 1 to a topic's sum. 
+- **Counter**: It is a program that *counts*. It contains a *dict* of *Topic*->*Sum*. *To count* means adding 1 to a topic's sum. 
 - **Topic**: It is a string representing a sum. Its main usage is for having logically several *count*s at the same time.
 - **Sum**: It is a topic's count. *Count* and *Sum* are synonyms.
 
