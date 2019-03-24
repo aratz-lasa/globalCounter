@@ -1,5 +1,5 @@
 # globalCounter
-Have you ever wanted to achieve **complete order** in a distributed system? GlobalCounter is a simple solution. It is a server that works as a **counter**. This gives you an easy way to locally timestamp functions.
+Have you ever wanted to achieve **complete order** in a distributed system? **GlobalCounter** is a simple solution. It is a server that works as a **global counter**. This gives you an easy way to locally timestamp functions.
 
 # Description
 ## Basic Concepts
