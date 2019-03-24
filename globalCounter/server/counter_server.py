@@ -5,7 +5,6 @@ from ..protocol.methods import *
 from ..protocol.models import *
 from ..various.abc import CounterServer
 
-
 MAX_WORKERS = cpu_count()
 
 
@@ -19,36 +18,37 @@ class UDPCounterServer(CounterServer):
         self.manager = Manager()
         self.topic_sum_map = self.manager.dict()
         self.pending_requests = Queue()
-        self.workers_pool = Pool(processes=max_workers, initializer=self.worker_loop)
+        self.workers_pool = Pool(
+            processes=max_workers, initializer=self.worker_loop)
 
-    def run(self):
+    def run(self) -> None:
         self.bind_socket()
         self.is_running = True
 
         try:
             while self.is_running:
                 msg, addr = self.sock.recvfrom(MSG_MAXIMUM_LENGTH)
-                self.pending_requests.put((msg,addr))
+                self.pending_requests.put((msg, addr))
         except Exception as err:
             if self.is_running:
                 raise err
 
-    def worker_loop(self):
+    def worker_loop(self) -> None:
         while True:
             msg, addr = self.pending_requests.get()
             re_msg = get_response(msg, self.topic_sum_map)
-            self.send_response(addr, re_msg)
+            self.send_response(re_msg, addr)
 
-    def send_response(self, addr, message):
+    def send_response(self, message: bytes, addr) -> None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(message, addr)
 
-    def bind_socket(self):
+    def bind_socket(self) -> None:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.ip, self.port))
 
-    def stop(self):
+    def stop(self) -> None:
         self.is_running = False
         self.workers_pool.terminate()
         self.workers_pool.join()
@@ -65,9 +65,10 @@ class TCPCounterServer(CounterServer):
         self.manager = Manager()
         self.topic_sum_map = self.manager.dict()
         self.pending_requests = Queue()
-        self.workers_pool = Pool(processes=max_workers, initializer=self.worker_loop)
+        self.workers_pool = Pool(
+            processes=max_workers, initializer=self.worker_loop)
 
-    def run(self):
+    def run(self) -> None:
         self.bind_socket()
         self.is_running = True
 
@@ -79,23 +80,23 @@ class TCPCounterServer(CounterServer):
             if self.is_running:
                 raise err
 
-    def worker_loop(self):
+    def worker_loop(self) -> None:
         while True:
             conn, addr = self.pending_requests.get()
             msg = conn.recv(MSG_MAXIMUM_LENGTH)
             re_msg = get_response(msg, self.topic_sum_map)
-            self.send_response(conn, re_msg)
+            self.send_response(re_msg, conn)
 
-    def send_response(self, conn, message):
+    def send_response(self, message: bytes, conn) -> None:
         conn.send(message)
         conn.close()
 
-    def bind_socket(self):
+    def bind_socket(self) -> None:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.ip, self.port))
         self.sock.listen(1)
 
-    def stop(self):
+    def stop(self) -> None:
         self.is_running = False
         self.sock.close()

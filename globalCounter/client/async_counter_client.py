@@ -2,6 +2,7 @@ from trio import socket as async_socket
 import trio
 import socket
 import inspect
+from typing import Any
 
 from ..protocol.methods import build_message, parse_msg
 from ..protocol.models import *
@@ -11,15 +12,18 @@ SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5555
 
 
-async def count(topic: str = "default", tcp: bool = False, ip: str = SERVER_IP, port: int = SERVER_PORT):
+async def count(topic: str = "default",
+                tcp: bool = False,
+                ip: str = SERVER_IP,
+                port: int = SERVER_PORT) -> int:
     if not isinstance(topic, op_code_data_type[COUNT]):
         raise MessageDataType(f"Expected {str}, received {type(topic)}")
 
     msg = build_message(COUNT, topic)
     if tcp:
-        return await send_recv_tcp_msg(msg, ip, port)
+        return await _send_recv_tcp_msg(msg, ip, port)
     else:
-        return await send_recv_udp_msg(msg, ip, port)
+        return await _send_recv_udp_msg(msg, ip, port)
 
 
 def count_deco(*deco_args, **deco_kwargs):
@@ -41,20 +45,20 @@ def count_deco(*deco_args, **deco_kwargs):
 
 
 async def reset(topic: str = "default",
-          tcp: bool = False,
-          ip: str = SERVER_IP,
-          port: int = SERVER_PORT):
+                tcp: bool = False,
+                ip: str = SERVER_IP,
+                port: int = SERVER_PORT) -> None:
     if not isinstance(topic, op_code_data_type[COUNT]):
         raise MessageDataType(f"Expected {str}, received {type(topic)}")
 
     msg = build_message(RESET_SUM, topic)
     if tcp:
-        return await send_recv_tcp_msg(msg, ip, port)
+        return await _send_recv_tcp_msg(msg, ip, port)
     else:
-        return await send_recv_udp_msg(msg, ip, port)
+        return await _send_recv_udp_msg(msg, ip, port)
 
 
-async def send_recv_udp_msg(msg: bytes, ip: str, port: int) -> int:
+async def _send_recv_udp_msg(msg: bytes, ip: str, port: int) -> Any:
     attempts = 0
     max_attempts = 5
     timeout = 0.1
@@ -70,7 +74,7 @@ async def send_recv_udp_msg(msg: bytes, ip: str, port: int) -> int:
     raise CounterUDPConnection("Exceeded connection maximum attempts")
 
 
-async def send_recv_tcp_msg(msg: bytes, ip: str, port: int) -> int:
+async def _send_recv_tcp_msg(msg: bytes, ip: str, port: int) -> Any:
     timeout = 0.1
 
     sock = async_socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP

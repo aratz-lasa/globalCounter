@@ -4,7 +4,7 @@ from .models import *
 from ..various.exceptions import MessageDataType, MessageOpCode
 
 
-def get_response(msg, topic_sum_map):
+def get_response(msg: bytes, topic_sum_map: dict) -> bytes:
     op_code, data = parse_msg(msg)
     re_data = apply_op(op_code, data, topic_sum_map)
     re_op_code = request_response_opcodes[op_code]
@@ -47,7 +47,7 @@ def parse_msg(msg: bytes) -> (int, str):
     return op_code, data
 
 
-def apply_op(op_code: int, data: Any, topic_sum_map: dict):
+def apply_op(op_code: int, data: Any, topic_sum_map: dict) -> Any:
     if op_code == COUNT:
         return count_and_get_sum(data, topic_sum_map)
     elif op_code == RESET_SUM:

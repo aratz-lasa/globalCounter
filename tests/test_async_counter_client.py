@@ -23,8 +23,6 @@ def test_udp_client_count():
     trio.run(udp_client_count)
 
 
-
-
 def test_tcp_client_count():
     async def tcp_client_count():
         with global_counter(TEST_IP, TEST_PORT, tcp=True):
@@ -35,6 +33,7 @@ def test_tcp_client_count():
 
         with pytest.raises(CounterTCPConnection):
             await async_counter_client.count(topic=topic, tcp=True)
+
     trio.run(tcp_client_count)
 
 
@@ -54,6 +53,7 @@ def test_udp_client_count_decorator():
 
         with pytest.raises(CounterUDPConnection):
             await get_zero()
+
     trio.run(udp_client_count_decorator)
 
 
@@ -72,6 +72,7 @@ def test_tcp_client_count_decorator():
 
         with pytest.raises(CounterTCPConnection):
             await get_zero()
+
     trio.run(tcp_client_count_decorator)
 
 
@@ -90,6 +91,7 @@ def test_udp_client_reset():
 
         with pytest.raises(CounterUDPConnection):
             await async_counter_client.reset(topic=topic)
+
     trio.run(udp_client_reset)
 
 
@@ -108,4 +110,5 @@ def test_tcp_client_reset():
 
         with pytest.raises(CounterTCPConnection):
             await async_counter_client.reset(topic=topic, tcp=True)
+
     trio.run(tcp_client_reset)

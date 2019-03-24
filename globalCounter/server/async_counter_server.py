@@ -14,7 +14,7 @@ class AsyncUDPCounterServer(CounterServer):
         self.sock = None
         self.is_running = False
 
-    async def run(self):
+    async def run(self) -> None:
         await self.bind_socket()
         self.is_running = True
 
@@ -27,20 +27,20 @@ class AsyncUDPCounterServer(CounterServer):
             if self.is_running:
                 raise err
 
-    async def handle_request(self, msg, addr):
+    async def handle_request(self, msg: bytes, addr) -> None:
         re_msg = get_response(msg, self.topic_sum_map)
-        await self.send_response(addr, re_msg)
+        await self.send_response(re_msg, addr)
 
-    async def send_response(self, addr, message):
+    async def send_response(self, msg: bytes, addr) -> None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        await sock.sendto(message, addr)
+        await sock.sendto(msg, addr)
 
-    async def bind_socket(self):
+    async def bind_socket(self) -> None:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         await self.sock.bind((self.ip, self.port))
 
-    def stop(self):
+    def stop(self) -> None:
         self.is_running = False
         self.sock.close()
 
@@ -53,7 +53,7 @@ class AsyncTCPCounterServer(CounterServer):
         self.sock = None
         self.is_running = False
 
-    async def run(self):
+    async def run(self) -> None:
         await self.bind_socket()
         self.is_running = True
 
@@ -66,21 +66,21 @@ class AsyncTCPCounterServer(CounterServer):
             if self.is_running:
                 raise err
 
-    async def handle_request(self, conn):
+    async def handle_request(self, conn) -> None:
         msg = await conn.recv(MSG_MAXIMUM_LENGTH)
         re_msg = get_response(msg, self.topic_sum_map)
-        await self.send_response(conn, re_msg)
+        await self.send_response(re_msg, conn)
 
-    async def send_response(self, conn, message):
+    async def send_response(self, message: bytes, conn) -> None:
         await conn.send(message)
         conn.close()
 
-    async def bind_socket(self):
+    async def bind_socket(self) -> None:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         await self.sock.bind((self.ip, self.port))
         self.sock.listen(1)
 
-    def stop(self):
+    def stop(self) -> None:
         self.is_running = False
         self.sock.close()

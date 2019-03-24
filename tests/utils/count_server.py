@@ -30,7 +30,7 @@ def async_global_counter(ip="127.0.0.1", port=5555, tcp=False):
     else:
         counter_server = AsyncUDPCounterServer(ip=ip, port=port)
 
-    server_proc = Process(target=trio.run, args=(counter_server.run,))
+    server_proc = Process(target=trio.run, args=(counter_server.run, ))
     server_proc.start()
     sleep(0.1)  # wait to initialize server
     try:
