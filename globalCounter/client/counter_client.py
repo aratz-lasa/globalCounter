@@ -1,5 +1,4 @@
 import socket
-import struct
 
 from ..protocol.methods import build_message, parse_msg
 from ..protocol.models import *
@@ -24,8 +23,8 @@ def count(topic: str = "default",
 
 
 def count_deco(*deco_args, **deco_kwargs):
-    def count_sub_deco(func):
-        def count_func(*args, **kwargs):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
             func_result = func(*args, **kwargs)
             count_number = count(*deco_args, **deco_kwargs)
             return (
@@ -33,9 +32,9 @@ def count_deco(*deco_args, **deco_kwargs):
                 func_result,
             )
 
-        return count_func
+        return wrapper
 
-    return count_sub_deco
+    return decorator
 
 
 def reset(topic: str = "default",
