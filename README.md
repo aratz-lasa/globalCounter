@@ -102,7 +102,7 @@ trio.run(run_global_counter, global_counter)
 from globalCounter.client.counter_client import count, reset
 
 
-sum = count(topic="topic", ip="127.0.0.1", port=9999)
+count_num = count(topic="topic", ip="127.0.0.1", port=9999)
 
 reset(topic="topic", ip="127.0.0.1", port=9999)
 
@@ -117,13 +117,13 @@ def do_something():
     return "Something"
 
 
-sum, something = do_something()
+count_num, something = do_something()
 ```
 #### TCP client
 ```python
 from globalCounter.client.counter_client import count, reset
 
-sum = count(topic="topic", ip="127.0.0.1", port=9999, tcp=True)
+count_num = count(topic="topic", ip="127.0.0.1", port=9999, tcp=True)
 
 reset(topic="topic", ip="127.0.0.1", port=9999, tcp=True)
 
@@ -138,7 +138,7 @@ def do_something():
     return "Something"
 
 
-sum, something = do_something()
+count_num, something = do_something()
 ```
 #### Async UDP client
 ```python
@@ -147,7 +147,7 @@ import trio
 from globalCounter.client.async_counter_client import count, reset
 
 async def run_count_and_reset():
-    sum = await count(topic="topic", ip="127.0.0.1", port=9999)
+    count_num = await count(topic="topic", ip="127.0.0.1", port=9999)
     
     await reset(topic="topic", ip="127.0.0.1", port=9999)
 
@@ -171,9 +171,9 @@ async def do_something_async():
     return "Something"
 
 
-sum, something = trio.run(do_something)
+count_num, something = trio.run(do_something)
 
-sum, something = trio.run(do_something_async)
+count_num, something = trio.run(do_something_async)
 ```
 #### Async TCP client
 ```python
@@ -182,7 +182,7 @@ import trio
 from globalCounter.client.async_counter_client import count, reset
 
 async def run_count_and_reset():
-    sum = await count(topic="topic", ip="127.0.0.1", port=9999, tcp=True)
+    count_num = await count(topic="topic", ip="127.0.0.1", port=9999, tcp=True)
     
     await reset(topic="topic", ip="127.0.0.1", port=9999, tcp=True)
 
@@ -206,6 +206,6 @@ async def do_something_async():
     return "Something"
 
 
-sum, something = trio.run(do_something)
+count_num, something = trio.run(do_something)
 
-sum, something = trio.run(do_something_async)
+count_num, something = trio.run(do_something_async)
